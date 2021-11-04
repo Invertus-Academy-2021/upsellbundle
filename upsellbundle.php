@@ -25,4 +25,16 @@ class upsellbundle extends Module
             $this->warning = $this->l('No name provided');
         }*/
     }
+
+    public function install(){
+        if (!parent::install()){
+            return false;
+        }
+
+        if(!$this->registerHook()){
+            return false;
+        }
+
+        return true;
+    }
 }
