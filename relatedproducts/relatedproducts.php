@@ -55,6 +55,18 @@ class relatedproducts extends Module implements WidgetInterface
         return false;
     }
 
+    public function getTabs()
+    {
+        return array(
+            array(
+                'name' => 'Related products',
+                'ParentClassName' => 'CONFIGURE',
+                'class_name' => 'AdminRelatedProductsTest',
+            )
+        );
+    }
+
+    
     public function getConfigFieldsValues()
     {
         return array(
