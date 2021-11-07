@@ -30,11 +30,17 @@ class upsellbundle extends Module
         if (!parent::install()){
             return false;
         }
-
-        if(!$this->registerHook()){
-            return false;
-        }
-
         return true;
+    }
+
+    public function getTabs()
+    {
+        return array(
+            array(
+                'name' => 'Upsell bundle',
+                'ParentClassName' => 'CONFIGURE',
+                'class_name' => 'AdminUpsellbundleTest',
+            )
+        );
     }
 }
