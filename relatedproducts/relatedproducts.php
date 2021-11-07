@@ -11,7 +11,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class relatedproducts extends Module implements WidgetInterface
+class relatedproducts extends Module
 {
     public function __construct()
     {
@@ -34,25 +34,50 @@ class relatedproducts extends Module implements WidgetInterface
         }*/
     }
 
-    public function renderWidget($hookName, array $configuration) 
+    public function install()
     {
-        
-        $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
-
-        return $this->fetch('module:'.$this->name.'/views/templates/widget/relatedproducts.tpl');
-    }
- 
-    public function getWidgetVariables($hookName , array $configuration)
-    {
-        $products = $this->getProducts();
-        if (!empty($products)) {
-            return array(
-                'products' => $products,
-                'allProductsLink' => Context::getContext()->link->getCategoryLink($this->getConfigFieldsValues()['HOME_FEATURED_CAT']),
-            );
+        if (!parent::install()) {
+            return false;
         }
 
-        return false;
+        if (!$this->registerHook('displayFooterProduct')) {
+            return false;
+        }
+
+        if (!$this->registerHook('actionFrontControllerSetMedia')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function uninstall(){
+        return parent::uninstall() 
+        && $this->unregisterHook('displayFooterProduct') 
+        && $this->unregisterHook('actionFrontControllerSetMedia');  
+    }
+
+    public function hookDisplayFooterProduct($params)
+    {
+        $products = $this->getProducts();
+        $this->context->smarty->assign([
+                'products' => $products,
+                'allProductsLink' => Context::getContext()->link->getCategoryLink($this->getConfigFieldsValues()['HOME_FEATURED_CAT']),
+            ]);
+
+         return $this->fetch('module:'.$this->name.'/views/templates/displayFooterProduct.tpl');
+    }
+
+    public function hookActionFrontControllerSetMedia()
+    {
+        $this->context->controller->registerStylesheet(
+            'relatedproducts-css',
+            'modules/' . $this->name . '/views/css/relatedproducts.css'
+        );
+        $this->context->controller->registerJavascript(
+            'relatedproducts-js',
+            'modules/' . $this->name . '/views/js/relatedproducts.js'
+        );
     }
 
     public function getTabs()
@@ -98,7 +123,7 @@ class relatedproducts extends Module implements WidgetInterface
         if (Configuration::get('HOME_FEATURED_RANDOMIZE')) {
             $query->setSortOrder(SortOrder::random());
         } else {
-            $query->setSortOrder(new SortOrder('product', 'position', 'asc'));
+            $query->setSortOrder(SortOrder::random());
         }
 
         $result = $searchProvider->runQuery(

@@ -1,4 +1,4 @@
-<section class="featured-products clearfix">
+<section class="featured-products clearfix relatedproducts">
   <h2 class="h2 products-section-title text-uppercase">
     Related products
   </h2>

@@ -1,3 +1,11 @@
-.test{
-    background-color: red;
+.relatedproducts{
+    background-color: white;
+}
+
+.row{
+    margin-left: 3px;
+}
+
+.products-section-title{
+    padding-top: 40px;
 }
