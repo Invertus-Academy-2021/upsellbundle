@@ -12,7 +12,10 @@
                      </div>
                   </th>
                   <th scope="col">
-                     Image
+                     <div class="ps-sortable-column" data-sort-col-name="image" data-sort-prefix="">
+                        <span role="columnheader">Image</span>
+                        <span role="button" class="ps-sort" aria-label="Sort by"></span>
+                     </div>
                   </th>
                   <th scope="col">
                      <div class="ps-sortable-column" data-sort-col-name="name" data-sort-prefix="">
@@ -20,20 +23,25 @@
                         <span role="button" class="ps-sort" aria-label="Sort by"></span>
                      </div>
                   </th>
-                  <th scope="col" class="text-center" style="width: 9%">
-                     <div class="ps-sortable-column" data-sort-col-name="price" data-sort-prefix="">
-                        <span role="columnheader">Price (tax excl.)</span>
-                        <span role="button" class="ps-sort" aria-label="Sort by"></span>
-                     </div>
-                  </th>
-                  <th scope="col" class="text-center" style="width: 9%">
-                     Price (tax incl.)
-                  </th>
             </thead>
 
         <tbody>
             {foreach from=$products item="product"}
                 <tr>
+                  <td class="checkbox-column form-group">
+                     <div class="md-checkbox md-checkbox-inline">
+                        <label>
+                              <input type="checkbox" id="bulk_action_selected_products-{$product.id_product}" name="bulk_action_selected_products[]" value={$product.id_product}{if $product.id_product|in_array:$checkedProducts} checked {/if}>
+                              <i class="md-checkbox-control"></i>
+                        </label>
+                     </div>
+                  </td>
+                    <td>
+                    {$product.id_product}
+                    </td>
+                    <td>
+                    <a href="/prestashop/admin/index.php/sell/catalog/products/{$product.id_product}"><img src="/prestashop/img/tmp/product_mini_{$product.id_product}.jpg" alt="" class="imgm img-thumbnail"></a>
+                    </td>
                     <td>
                     {$product.name}
                     </td>
