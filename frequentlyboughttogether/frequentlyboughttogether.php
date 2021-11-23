@@ -62,6 +62,7 @@ class frequentlyboughttogether extends Module
         $this->context->smarty->assign([
             'checkedProducts' => $this->getCheckedProducts($this->getCheckedProductIds(Tools::getValue('id_product')))
         ]);
+
         return $this->context->smarty->fetch('module:frequentlyboughttogether/views/templates/front/app.tpl');
     }
 

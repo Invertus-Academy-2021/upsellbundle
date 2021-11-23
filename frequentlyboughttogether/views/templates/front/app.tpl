@@ -9,14 +9,14 @@
         </div>
         <div class="fbt-container">
             <div class="fbt-items-and-price">
+                <form action="{url entity="module" name="frequentlyboughttogether" controller="addToCart"}" method="post" name="checkbox-form">
                 <div class ="fbt-items">
-                    <form type="submit" name="checkbox-form">
                         <ul style="list-style: none;">
                         {foreach $checkedProducts as $key=>$checkedProduct}
                         <li>
                             <div class="fbt-item">
                                 <div class="fbt-checkbox">
-                                    <input  type="checkbox" data-price="{$checkedProduct->price}" id="selected_products-{$key}" name="selected_products[]" value={$key} checked >
+                                    <input  type="checkbox" data-price="{$checkedProduct->price}" id="selected_products-{$key}" name="selected_products[]" value={$checkedProduct->id} >
                                     <i class="md-checkbox-control"></i> 
                                 </div>
                                 <div class="fbt-image"> 
@@ -36,18 +36,18 @@
                         </li>
                         {/foreach}
                         </ul>
-                    </form>
                 </div>
                 <div class="fbt-price">
                     <div class="fbt-price-text">
-
                     </div>
                     <div class="fbt-to-cart"> 
                         <p class="fbt-total-price">Total price: 0 €
                         </p>                       
-                        <button id="btn-to-cart" type="submit" for="checkbox-form" class="fbt-btn-to-cart btn btn-success"><i class="fas fa-shopping-cart"></i> &nbsp    Add to cart</button>
+                        <button type="submit" for="checkbox-form" class="fbt-btn-to-cart btn btn-success"><i class="fas fa-shopping-cart"></i> &nbsp    Add to cart</button>
                     </div>
+                    
                 </div>
+            </form>
             
             </div>
     </div>

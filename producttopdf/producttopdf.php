@@ -50,7 +50,7 @@ class producttopdf extends Module
         && $this->unregisterHook('displayProductAdditionalInfo') 
         && $this->unregisterHook('actionFrontControllerSetMedia');  
     }
-    
+
     public function getContent()
     {
         Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducttopdfConfiguration'));
@@ -79,6 +79,7 @@ class producttopdf extends Module
         $data = file_get_contents($imagePath);
         $base64 = 'data:image/jpg;base64,' . base64_encode($data);
         return $base64;
+        //return 'hello';
     }
 
     public function getRoundedPrice(){
