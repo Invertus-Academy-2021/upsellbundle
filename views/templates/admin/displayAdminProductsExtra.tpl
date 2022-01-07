@@ -1,0 +1,1 @@
+<a class="btn btn-primary" href="{$url}&product_id={$product_id}" role="button">Add products!</a>
