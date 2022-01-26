@@ -40,7 +40,7 @@ class upsellbundle extends Module
             return false;
         }
 
-        if(!$this->registerHook('header')){
+        if(!$this->registerHook('actionFrontControllerSetMedia')){
             return false;
         }
 
@@ -61,13 +61,15 @@ class upsellbundle extends Module
         Tools::redirectAdmin($this->context->link->getAdminLink(self::CONTROLLER_UPSELL));
     }
 
-    public function hookHeader()
+    public function hookActionFrontControllerSetMedia()
     {
-        //neveikia css registravimas, su hookActionFrontControllerSetMedia irgi neveikė, tai per header bandžiau
-        $this->context->controller->addCSS('modules/' . $this->name .'/views/css/style.css', 'all');
         $this->context->controller->registerStylesheet(
             'upsellbundle-css',
-            'modules/' .  $this->name .'/views/css/style.css'
+            'modules/' .  $this->name .'/views/css/style.css',
+            [
+                'media' => 'all',
+                'priority' => 200,
+            ]
         );
     }
 
@@ -82,7 +84,7 @@ class upsellbundle extends Module
 
     public function hookDisplayAboveCartSummary($params){
 
-        $productData = array(0, '', '', 0);
+        $productData = array(0, '', '', 0, 0, 0);
         $visibilityOfPoster = 0;
         if(($result = $this->checkIfCartHasTargetProducts()) != 0) {
             $visibilityOfPoster = 1;
@@ -95,6 +97,8 @@ class upsellbundle extends Module
             'imageURL' => $productData[1],
             'productName' => $productData[2],
             'productDefaultAttributeId' => $productData[3],
+            'productPrice' => $productData[4],
+            'discountedProductPrice' => $productData[5],
             'url' => $this->context->link->getAdminLink('AdminUpsellbundleOneClickUpsell'),
         ]);
 
@@ -109,8 +113,44 @@ class upsellbundle extends Module
         $product = new Product($productId, false, Context::getContext()->language->id);
         $link = new Link;
         $imagePath = $newBaseURL . str_replace($oldBaseURLToReplace, "", $link->getImageLink($product->link_rewrite, $image['id_image'], 'small_default'));
-        $productData = array($productId, $imagePath, $product->name, $product->cache_default_attribute);
+        $cardId = $this->context->cart->id;
+        list($oldPrice, $discountedPrice) = $this->getOriginalAndDiscountedPrices($productId, 0.2, $cardId);//Product::getPriceStatic($productId);
+        $productData = array($productId, $imagePath,
+                            $product->name, $product->cache_default_attribute,
+                            $oldPrice, $discountedPrice);
         return $productData;
+    }
+
+    //set specific price for product discount
+    //return original and discounted prices
+    private function getOriginalAndDiscountedPrices($productId, $discountPercentage, $cartId){
+        $specificPrice = SpecificPrice::getSpecificPrice($productId, 1, 0, 0, 0, 1, 0, 0, $cartId);
+        if (is_array($specificPrice) && isset($specificPrice['id_specific_price'])) {
+            $specificPrice = new SpecificPrice((int)$specificPrice['id_specific_price']);
+            //$specificPrice->delete();
+        }else{
+            $specificPrice = new SpecificPrice();
+            $specificPrice->id_product = $productId;
+            $specificPrice->id_product_attribute = 0;
+            $specificPrice->id_shop = 1;
+            $specificPrice->id_cart = $cartId;
+            $specificPrice->id_currency = 0;
+            $specificPrice->id_country = 0;
+            $specificPrice->id_group = 0;
+            $specificPrice->id_customer = 0;
+            $specificPrice->price = -1;
+            $specificPrice->from_quantity = 1;
+            $specificPrice->reduction = $discountPercentage;
+            $specificPrice->reduction_type = 'percentage';
+            $specificPrice->reduction_tax = 1;
+            $specificPrice->from = "0000-00-00 00:00:00";
+            $specificPrice->to = "0000-00-00 00:00:00";
+            $specificPrice->save();
+        }
+
+        $priceWithNoDiscount = Product::getPriceStatic($productId);
+
+        return [$priceWithNoDiscount, ($priceWithNoDiscount * (1 - $specificPrice->reduction))];
     }
 
     private function getTargetProducts($cartProductIds){

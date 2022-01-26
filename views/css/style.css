@@ -61,3 +61,14 @@ input:checked + .slider:before {
 .upsellItemContainer{
     padding-bottom: 20px;
 }
+
+.card{
+    padding: 1.25rem;
+}
+.card-img-top{
+    padding-bottom: 10px;
+}
+.card-text{
+    color: red;
+    font-weight: bold;
+}
